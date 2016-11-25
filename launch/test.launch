@@ -1,0 +1,11 @@
+<launch>
+  <group ns="$(arg robot)">
+    <node pkg="rc_monitor"
+      type="rc_monitor"
+      name="rc_monitor"
+      clear_params="true"
+      output="screen">
+      <param name="mult_vel" value="0.5"/>
+    </node>
+  </group>
+</launch>

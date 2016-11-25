@@ -1,0 +1,22 @@
+<package format="2">
+  <name>rc_monitor</name>
+  <version>1.0.0</version>
+  <description>rc_monitor</description>
+  <maintainer email="loiannogi@gmail.com">Giuseppe Loianno</maintainer>
+  
+  <license>BSD</license>
+
+  <!-- Dependencies which this package needs to build itself. -->
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <!-- Dependencies needed to compile and run this package. -->
+  <depend>roscpp</depend>
+  <depend>nav_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>quadrotor_msgs</depend>
+  <depend>mavros_msgs</depend>
+  <depend>mav_manager</depend>
+  <depend>nodelet</depend>
+  <depend>cmake_modules</depend>
+
+</package>
