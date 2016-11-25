@@ -1,11 +1,24 @@
 <launch>
   <group ns="$(arg robot)">
+  
+   <node pkg="mav_manager"
+    type="mav_manager_sub"
+    name="mav_manager_sub"
+    clear_params="true"
+    output="screen">
+    <remap from="~hover" to="hover"/>
+    <remap from="~setDesVelInWorldFrame" to="setDesVelInWorldFrame"/>
+  </node>
+    
     <node pkg="rc_monitor"
       type="rc_monitor"
       name="rc_monitor"
       clear_params="true"
       output="screen">
       <param name="mult_vel" value="0.5"/>
+      <remap from="~hover" to="hover"/>
+      <remap from="~setDesVelInWorldFrame" to="setDesVelInWorldFrame"/>
     </node>
+    
   </group>
 </launch>
