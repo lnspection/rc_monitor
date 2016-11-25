@@ -1,8 +1,8 @@
 #include <ros/ros.h>
 #include <mavros_msgs/RCIn.h>
 #include <geometry_msgs/Twist.h>
-#include <rc_monitor/rc_monitor.h>
-#include <mav_manager/manager.h>
+#include <std_msgs/Empty.h>
+#include <std_msgs/Bool.h>
 #include <memory>
 
 using namespace std;
@@ -11,8 +11,9 @@ int points_added_counter;
 ros::ServiceClient client;
 
 float mult_vel = 0.01;
-MAV_Subscribers mav_sub;
 bool state_hover = false;
+ros::Publisher vel_pub;
+ros::Publisher hov_pub;
 
 void rc_callback(const mavros_msgs::RCIn::ConstPtr &RC)
 {
@@ -43,12 +44,12 @@ void rc_callback(const mavros_msgs::RCIn::ConstPtr &RC)
   msg_vel.angular.z = 0.0f;
   std_msgs::Empty empyt_msg;
   if(RC->channels[6] == 1){
-    mav_sub.setDesVelInWorldFrame_cb(msg_vel);
+    vel_pub.publish(msg_vel);
     state_hover = false;
   }
   else if(!state_hover){
     //switch to position control and hover
-    mav_sub.hover_cb(empyt_msg);
+    hov_pub.publish(empyt_msg);
     state_hover = true;
   }    
 }
@@ -63,6 +64,10 @@ int main(int argc, char **argv)
     
       //read the external velocity option
       n.param("mult_vel", mult_vel, 0.5f);
+      //send the commands
+      vel_pub = n.advertise<geometry_msgs::Twist>("setDesVelInWorldFrame", 10);
+      hov_pub = n.advertise<std_msgs::Empty>("hover", 10);
+
     
     ros::Subscriber rc_sub_ = n.subscribe("rc/in", 10, &rc_callback,
                                ros::TransportHints().tcpNoDelay());

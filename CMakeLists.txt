@@ -7,7 +7,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
-find_package(catkin REQUIRED COMPONENTS roscpp nav_msgs geometry_msgs quadrotor_msgs nodelet mav_manager cmake_modules)
+find_package(catkin REQUIRED COMPONENTS roscpp nav_msgs geometry_msgs quadrotor_msgs nodelet cmake_modules)
 find_package(Eigen 3 REQUIRED)
 
 # If mavros_msgs not found, don't build but do not cause a build error
@@ -16,13 +16,13 @@ find_package(mavros_msgs)
 if(NOT ${mavros_msgs_FOUND})
   message(WARNING "NOTE: mavros_msgs not found so not building mavros_interface")
 else()
-  include_directories(include ${catkin_INCLUDE_DIRS} ${EIGEN_INCLUDE_DIR})
+  include_directories(${catkin_INCLUDE_DIRS} ${EIGEN_INCLUDE_DIR})
 
   catkin_package(
     INCLUDE_DIRS
     LIBRARIES
     CATKIN_DEPENDS roscpp nav_msgs geometry_msgs quadrotor_msgs mavros_msgs nodelet
-    DEPENDS mav_manager Eigen)
+    DEPENDS Eigen)
     
   #add_library(sub_library rc_monitor/rc_monitor.h)
   add_executable(rc_monitor src/rc_monitor.cpp)
