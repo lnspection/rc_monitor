@@ -11,7 +11,7 @@ int points_added_counter;
 ros::ServiceClient client;
 
 float mult_vel = 0.01;
-bool state_hover = false;
+bool state_hover = true;
 ros::Publisher vel_pub;
 ros::Publisher hov_pub;
 
@@ -23,18 +23,18 @@ void rc_callback(const mavros_msgs::RCIn::ConstPtr &RC)
   //read channel for the thrust to give velocity on z
   if(RC->channels[2] > 1480 && RC->channels[2] < 1520)
     vel_z = 0;
-  else if(RC->channels[2] >= 1520)
-    vel_z = (RC->channels[2] - 1520) / 400 * mult_vel;//need to be scaled
-  else if(RC->channels[2] <= 1480)
-    vel_z = (RC->channels[2] - 1480) / 400 * mult_vel;//need to be scaled
+  else if(RC->channels[2] >= 1520.0)
+    vel_z = (RC->channels[2] - 1520.0) / 400 * mult_vel;//need to be scaled
+  else if(RC->channels[2] <= 1480.0)
+    vel_z = (RC->channels[2] - 1480.0) / 400 * mult_vel;//need to be scaled
   
   //read channel for the roll to give velocity on y
-  if(RC->channels[2] > 1480 && RC->channels[2] < 1520)
+  if(RC->channels[0] > 1480 && RC->channels[0] < 1520)
     vel_y = 0;
-  else if(RC->channels[2] >= 1520)
-    vel_y = (RC->channels[2] - 1520) / 400 * mult_vel;//need to be scaled
-  else if(RC->channels[2] <= 1480)
-    vel_y = (RC->channels[2] - 1480) / 400 * mult_vel;//need to be scaled
+  else if(RC->channels[0] >= 1520.0)
+    vel_y = (RC->channels[0] - 1520.0) / 400 * mult_vel;//need to be scaled
+  else if(RC->channels[0] <= 1480.0)
+    vel_y = (RC->channels[0] - 1480.0) / 400 * mult_vel;//need to be scaled
     
   //call the velocity tracker
   geometry_msgs::Twist msg_vel;
@@ -43,13 +43,18 @@ void rc_callback(const mavros_msgs::RCIn::ConstPtr &RC)
   msg_vel.linear.z = vel_z;
   msg_vel.angular.z = 0.0f;
   std_msgs::Empty empyt_msg;
-  if(RC->channels[6] == 1){
+  if(RC->channels[4] <= 1500){
     vel_pub.publish(msg_vel);
     state_hover = false;
   }
   else if(!state_hover){
     //switch to position control and hover
-    hov_pub.publish(empyt_msg);
+      msg_vel.linear.x = 0.0f;
+      msg_vel.linear.y = 0.0f;
+      msg_vel.linear.z = 0.0f;
+      msg_vel.angular.z = 0.0f;
+      vel_pub.publish(msg_vel);
+      hov_pub.publish(empyt_msg);
     state_hover = true;
   }    
 }
