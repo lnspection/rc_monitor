@@ -1,14 +1,16 @@
 <launch>
-  <group ns="$(arg robot)">
+    <arg name="robot"  default="Inspot" />
   
-   <node pkg="mav_manager"
+  <group ns="$(arg robot)">
+   
+<!--   <node pkg="mav_manager"
     type="mav_manager_sub"
     name="mav_manager_sub"
     clear_params="true"
     output="screen">
     <remap from="~hover" to="hover"/>
     <remap from="~setDesVelInWorldFrame" to="setDesVelInWorldFrame"/>
-  </node>
+  </node> -->
     
     <node pkg="rc_monitor"
       type="rc_monitor"
@@ -16,9 +18,10 @@
       clear_params="true"
       output="screen">
       <param name="mult_vel" value="0.5"/>
-      <remap from="~hover" to="hover"/>
-      <remap from="~setDesVelInWorldFrame" to="setDesVelInWorldFrame"/>
-    </node>
+      <!--<remap from="~hover" to="mav_manager_node/hover"/>-->
+      <!--<remap from="~setDesVelInWorldFrame" to="mav_manager_node/setDesVelInWorldFrame"/>-->
+       <remap from="~rc/in" to="/mavros/rc/in"/> 
+   </node>
     
   </group>
 </launch>

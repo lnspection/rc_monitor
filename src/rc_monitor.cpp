@@ -4,6 +4,7 @@
 #include <std_msgs/Empty.h>
 #include <std_msgs/Bool.h>
 #include <mav_manager/Vec4.h>
+#include <std_srvs/Trigger.h>
 #include <memory>
 
 using namespace std;
@@ -22,6 +23,9 @@ void rc_callback(const mavros_msgs::RCIn::ConstPtr &RC)
 {
   float vel_y = 0.0;
   float vel_z = 0.0;
+
+  if(RC->channels.size() == 0)
+  return;
 
   //read channel for the thrust to give velocity on z
   if(RC->channels[2] > 1480 && RC->channels[2] < 1520)
@@ -73,8 +77,10 @@ void rc_callback(const mavros_msgs::RCIn::ConstPtr &RC)
   srv_hov.request.goal[1]  = 0.0f;
   srv_hov.request.goal[2]  = 0.0f;
   srv_hov.request.goal[3]  = 0.0f;
+
+  std_srvs::Trigger hov_req;
   
-  if(RC->channels[4] <= 1500){
+  if(RC->channels[5] >= 1500){
 
 
   if (client_vel.call(srv_vel))
@@ -97,8 +103,8 @@ void rc_callback(const mavros_msgs::RCIn::ConstPtr &RC)
   else
     ROS_ERROR("Failed to call service velocity before hover");
    
-  if (client_hov.call(srv_hov))
-    ROS_INFO("Sum: %ld", (bool)srv_hov.response.success);
+  if (client_hov.call(hov_req))
+    ROS_INFO("Sum: %ld", (bool)hov_req.response.success);
   else
     ROS_ERROR("Failed to call service hover");
     state_hover = true;
@@ -121,8 +127,8 @@ int main(int argc, char **argv)
       //vel_pub = n.advertise<geometry_msgs::Twist>("setDesVelInWorldFrame", 10);
       //hov_pub = n.advertise<std_msgs::Empty>("hover", 10);
 
-    client_vel = n.serviceClient<mav_manager::Vec4>("setDesVelInWorldFrame");
-    client_hov = n.serviceClient<mav_manager::Vec4>("hover");
+    client_vel = n.serviceClient<mav_manager::Vec4>("/Inspot/mav_manager_node/setDesVelInWorldFrame");
+    client_hov = n.serviceClient<std_srvs::Trigger>("/Inspot/mav_manager_node/hover");
     ros::Subscriber rc_sub_ = n.subscribe("rc/in", 10, &rc_callback,
                                ros::TransportHints().tcpNoDelay());
     
